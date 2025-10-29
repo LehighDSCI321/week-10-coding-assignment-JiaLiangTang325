@@ -1,3 +1,5 @@
+"""Graph classes implementing traversable digraph and DAG with cycle detection."""
+
 from collections import deque
 
 class SortableDigraph:
