@@ -6,24 +6,20 @@ class SortableDigraph:
         self.adj = {}  # adjacency list
         self.node_data = {}  # store node data
         self.edge_weights = {}  # store edge weights
-        
     def add_node(self, node, data=None):
         """Add a node to the graph"""
         if node not in self.adj:
             self.adj[node] = []
             self.node_data[node] = data
-    
     def add_edge(self, u, v, edge_weight=None):
         """Add an edge from u to v"""
         self.add_node(u)
         self.add_node(v)
         self.adj[u].append(v)
         self.edge_weights[(u, v)] = edge_weight
-    
     def get_node_value(self, node):
         """Get the data associated with a node"""
         return self.node_data.get(node)
-    
     def get_edge_weight(self, u, v):
         """Get the weight of an edge"""
         return self.edge_weights.get((u, v))
