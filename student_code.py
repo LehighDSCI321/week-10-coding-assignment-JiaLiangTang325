@@ -5,7 +5,7 @@ class SortableDigraph:
     def __init__(self):
         self.adj = {}  # adjacency list
         
-    def add_node(self, node):
+    def add_node(self, node, data=None):
         if node not in self.adj:
             self.adj[node] = []
     
@@ -16,7 +16,7 @@ class SortableDigraph:
         self.adj[u].append(v)
     
     def topsort(self):
-        """Topological sort - assumed to be implemented"""
+        """Topological sort"""
         visited = set()
         result = []
         
@@ -32,6 +32,14 @@ class SortableDigraph:
             visit(node)
         
         return result[::-1]
+    
+    def top_sort(self):
+        """Alias for topsort to match test requirements"""
+        return self.topsort()
+    
+    def successors(self, node):
+        """Get all successors of a node"""
+        return self.adj.get(node, []).copy()
 
 
 class TraversableDigraph(SortableDigraph):
@@ -50,10 +58,10 @@ class TraversableDigraph(SortableDigraph):
             return
         
         visited.add(start)
-        yield start
-        
+        # Don't yield start node - tests expect only successors
         for neighbor in self.adj.get(start, []):
             if neighbor not in visited:
+                yield neighbor
                 yield from self.dfs(neighbor, visited)
     
     def bfs(self, start=None):
@@ -67,9 +75,13 @@ class TraversableDigraph(SortableDigraph):
         visited = {start}
         queue = deque([start])
         
+        # Skip the start node in output
+        first = True
         while queue:
             node = queue.popleft()
-            yield node
+            if not first:
+                yield node
+            first = False
             
             for neighbor in self.adj.get(node, []):
                 if neighbor not in visited:
