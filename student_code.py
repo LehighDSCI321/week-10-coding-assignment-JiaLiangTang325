@@ -6,11 +6,12 @@ class SortableDigraph:
         self.adj = {}  # adjacency list
         
     def add_node(self, node, data=None):
+        """Add a node to the graph"""
         if node not in self.adj:
             self.adj[node] = []
     
-    def add_edge(self, u, v):
-        """May be overridden in subclasses"""
+    def add_edge(self, u, v, edge_weight=None):
+        """Add an edge from u to v"""
         self.add_node(u)
         self.add_node(v)
         self.adj[u].append(v)
@@ -40,16 +41,30 @@ class SortableDigraph:
     def successors(self, node):
         """Get all successors of a node"""
         return self.adj.get(node, []).copy()
+    
+    def predecessors(self, node):
+        """Get all predecessors of a node"""
+        preds = []
+        for u in self.adj:
+            if node in self.adj[u]:
+                preds.append(u)
+        return preds
+    
+    def get_nodes(self):
+        """Get all nodes in the graph"""
+        return list(self.adj.keys())
 
 
 class TraversableDigraph(SortableDigraph):
+    """Graph with traversal methods"""
+    
     def dfs(self, start=None, visited=None):
         """Depth-first search traversal"""
         if start is None:
-            start = next(iter(self.adj.keys())) if self.adj else None
-        
-        if start is None:
-            return
+            if self.adj:
+                start = next(iter(self.adj.keys()))
+            else:
+                return
         
         if visited is None:
             visited = set()
@@ -90,12 +105,14 @@ class TraversableDigraph(SortableDigraph):
 
 
 class DAG(TraversableDigraph):
-    def add_edge(self, u, v):
+    """Directed Acyclic Graph"""
+    
+    def add_edge(self, u, v, edge_weight=None):
         """Add edge while ensuring no cycles are created"""
         if self._has_path(v, u):
             raise ValueError(f"Adding edge ({u} -> {v}) would create a cycle")
         
-        super().add_edge(u, v)
+        super().add_edge(u, v, edge_weight)
     
     def _has_path(self, start, end, visited=None):
         """Check if path exists from start to end"""
